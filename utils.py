@@ -2,7 +2,7 @@ import pygame
 
 import os
 
-BASE_IMG_PATH = "Python/__pycache__/ninja_game/data/images/"
+BASE_IMG_PATH = "__pycache__/ninja_game/data/images/"
 
 class Utils:
     def load_image(path):
@@ -16,3 +16,25 @@ class Utils:
             print(path + "/" + img_name)
             images.append(Utils.load_image( path + "/" + img_name))
         return images
+    
+class Animations:
+    def __init__(self, images, img_dur=5, loop=True):
+        self.images = images
+        self.img_duration = img_dur
+        self.loop = loop
+        self.done = False
+        self.frame = 0
+
+    def copy(self):
+        return Animations(self.images, self.img_duration, self.loop)
+    
+    def update(self):
+        if self.loop:
+            self.frame = (self.frame + 1) % (self.img_duration * len(self.images))
+        else:
+            self.frame = min(self.frame + 1, self.img_duration * len(self.images) - 1)
+            if self.frame >= self.img_duration * len(self.images) - 1:
+                self.done = True
+
+    def img(self):
+        return self.images [int(self.frame / self.img_duration)]

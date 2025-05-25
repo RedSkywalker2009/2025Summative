@@ -12,8 +12,10 @@ class Tilemap:
         self.offgrid_tiles = []
 
         for i in range(10):
-            self.setTile(20+i, 13, "grass", 1) # self.tilemap[str(20 + i) + ";13"] = {"type": "grass", "variant": 1, "pos": (20 + i, 13)}
-            self.setTile(13, 20+i,"stone", 1) #self.tilemap["13;" + str(20 + i)] = {"type": "stone", "variant": 1, "pos": (13, 20 + i)}
+            self.setTile(20+i, 20, "grass", 1) 
+            self.setTile(5, 20+i,"stone", 1) 
+            self.setTile(3+i, 5, "grass", 1) 
+            self.setTile(15, 19+i,"stone", 1) 
 
     def setTile(self, x, y, type, variant):
         self.tilemap[str(x) + ';' + str(y)] = {"type": type, "variant": variant, "pos": (x, y)}
@@ -43,8 +45,9 @@ class Tilemap:
         for tile in self.offgrid_tiles:
             surf.blit(self.game.assets[tile["type"]][tile["variant"]],(tile["pos"][0] - offset[0], tile["pos"][1] - offset[1]))
 
-        for loc in self.tilemap:
-            tile = self.tilemap[loc]
-            surf.blit(self.game.assets[tile["type"]][tile["variant"]], (tile["pos"][0] * self.tile_size - offset[0], tile["pos"][1] * self.tile_size - offset[1]))
-        
-       
+        for x in range(offset[0] // self.tile_size, (offset[0] + surf.get_width()) // self.tile_size):
+             for y in range(offset[1] // self.tile_size, (offset[1] + surf.get_height()) // self.tile_size):
+                 loc = str(x) + ";" + str(y)
+                 if loc in self.tilemap:
+                     tile = self.tilemap[loc] 
+                     surf.blit(self.game.assets[tile["type"]][tile["variant"]], (tile["pos"][0] * self.tile_size - offset[0], tile["pos"][1] * self.tile_size - offset[1]))
