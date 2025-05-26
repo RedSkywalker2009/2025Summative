@@ -47,7 +47,7 @@ class Game:
         self.clouds = Clouds(self.assets["clouds"], count = 16)
         
         self.players = {}
-        for i in range(1,5):
+        for i in range(1,3):
             self.players[i] = Player(self, (50 + 10 * i, 50), (8, 15))
         
         self.scroll = [0, 0]
@@ -91,8 +91,6 @@ class Game:
             for p in self.players.values():
                 p.render(self.display, render_scroll)
 
-            print(self.tilemap.physics_rects_around(self.players[1].pos))
-
             
         # set an event to close the game
             for event in pygame.event.get():
@@ -127,20 +125,20 @@ p1_inputs = {  # Look up direction based on key symbol
             pygame.K_a: "LEFT",
             pygame.K_d: "RIGHT",
             pygame.K_e: "SPECIAL1",
-            pygame.K_q: "BLOCK",
-            pygame.K_r: "SPECIAL2",
+            pygame.K_r: "BLOCK",
+            pygame.K_q: "SPECIAL2",
             pygame.K_z: "ATTACK1",
             pygame.K_x: "ATTACK2",
             pygame.K_c: "ATTACK3"
             }
 p2_inputs = {  # Look up direction based on key symbol
-            pygame.K_i: "JUMP",
+            pygame.K_UP: "JUMP",
             pygame.K_k: "CROUCH",
-            pygame.K_j: "LEFT",
-            pygame.K_l: "RIGHT",
-            pygame.K_o: "SPECIAL1",
-            pygame.K_u: "BLOCK",
-            pygame.K_p: "SPECIAL2",
+            pygame.K_LEFT: "LEFT",
+            pygame.K_RIGHT: "RIGHT",
+            pygame.K_RSHIFT: "SPECIAL1",
+            pygame.K_p: "BLOCK",
+            pygame.K_RCTRL: "SPECIAL2",
             pygame.K_m: "ATTACK1",
             pygame.K_COMMA: "ATTACK2",
             pygame.K_PERIOD: "ATTACK3"

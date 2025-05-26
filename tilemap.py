@@ -16,6 +16,23 @@ class Tilemap:
             self.setTile(5, 20+i,"stone", 1) 
             self.setTile(3+i, 5, "grass", 1) 
             self.setTile(15, 19+i,"stone", 1) 
+            self.setTile(2, 10+i,"stone", 1) 
+            self.setTile(0+i, 40, "grass", 1) 
+            self.setTile(10+i, 40, "grass", 1) 
+            self.setTile(-10+i, 40, "grass", 1) 
+            self.setTile(20+i, 40, "grass", 1) 
+            self.setTile(30+i, 40, "grass", 1) 
+            self.setTile(-20+i, 40, "grass", 1) 
+            self.setTile(6+i, 9, "grass", 1) 
+            self.setTile(4, 20+i,"stone", 1) 
+            self.setTile(29+i, 16, "grass", 1) 
+            self.setTile(11, 22+i,"stone", 1) 
+            self.setTile(21, 10+i,"stone", 1) 
+            self.setTile(27+i, 19, "grass", 1) 
+            self.setTile(16, 17+i,"stone", 1) 
+            self.setTile(7+i, 1, "grass", 1) 
+            self.setTile(30, 3+i,"stone", 1) 
+            self.setTile(11, 22+i,"stone", 1) 
 
     def setTile(self, x, y, type, variant):
         self.tilemap[str(x) + ';' + str(y)] = {"type": type, "variant": variant, "pos": (x, y)}

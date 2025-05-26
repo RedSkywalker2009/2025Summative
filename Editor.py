@@ -46,7 +46,7 @@ class Editor:
         while True:
             self.display.fill((0,0,0))
 
-            current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy
+            current_tile_img = self.assets[self.tile_list[self.tile_group]][self.tile_variant].copy()
             current_tile_img.set_alpha(100)
 
             self.display.blit(current_tile_img, (100,100))
