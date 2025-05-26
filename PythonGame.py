@@ -11,6 +11,8 @@ from clouds import Clouds
 
 class Game:
 
+    Resolution = (1920, 1080)
+
 
     def __init__(self):
 
@@ -21,9 +23,10 @@ class Game:
         
         pygame.display.set_caption("plat former")
         #creating the screen and setting the size
-        self.screen = pygame.display.set_mode((640,480))
+        # consider 1920x1080
+        self.screen = pygame.display.set_mode(Game.Resolution)
 
-        self.display = pygame.Surface((320,240))
+        self.display = pygame.Surface((Game.Resolution[0]/2, Game.Resolution[1]/2))
 
         #setting framerate
         self.clock = pygame.time.Clock()
@@ -98,12 +101,17 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
                 if event.type == pygame.KEYDOWN:
                     self.on_key_press(event.key, event.mod)
                 if event.type == pygame.KEYUP:
                     self.on_key_release(event.key, event.mod) 
                 
-            self.screen.blit(pygame.transform.scale (self.display, self.screen.get_size()) ,(0,0))
+            self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()) ,(0,0))
+
             #tell the game to update 
             pygame.display.update()
             # a sleep untill 60fps is maintained
