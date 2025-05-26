@@ -26,8 +26,7 @@ class Game:
         # consider 1920x1080
         self.screen = pygame.display.set_mode(Game.Resolution)
 
-        self.display = pygame.Surface((Game.Resolution[0]/2, Game.Resolution[1]/2))
-
+        self.display = pygame.Surface((Game.Resolution[0]/3, Game.Resolution[1]/3))
         #setting framerate
         self.clock = pygame.time.Clock()
 
@@ -50,7 +49,7 @@ class Game:
         self.clouds = Clouds(self.assets["clouds"], count = 16)
         
         self.players = {}
-        for i in range(1,3):
+        for i in range(1,2):
             self.players[i] = Player(self, (50 + 10 * i, 50), (8, 15))
         
         self.scroll = [0, 0]
@@ -140,19 +139,19 @@ p1_inputs = {  # Look up direction based on key symbol
             pygame.K_c: "ATTACK3"
             }
 p2_inputs = {  # Look up direction based on key symbol
-            pygame.K_UP: "JUMP",
+            pygame.K_i: "JUMP",
             pygame.K_k: "CROUCH",
-            pygame.K_LEFT: "LEFT",
-            pygame.K_RIGHT: "RIGHT",
-            pygame.K_RSHIFT: "SPECIAL1",
+            pygame.K_j: "LEFT",
+            pygame.K_l: "RIGHT",
+            pygame.K_u: "SPECIAL1",
             pygame.K_p: "BLOCK",
-            pygame.K_RCTRL: "SPECIAL2",
+            pygame.K_o: "SPECIAL2",
             pygame.K_m: "ATTACK1",
             pygame.K_COMMA: "ATTACK2",
             pygame.K_PERIOD: "ATTACK3"
             }
 
 g.players[1].set_inputmap(p1_inputs)
-g.players[2].set_inputmap(p2_inputs)
+#g.players[2].set_inputmap(p2_inputs)
 
 g.run()
