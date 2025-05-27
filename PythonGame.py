@@ -16,9 +16,6 @@ class Game:
 
     def __init__(self):
 
-        #name the screen
-        print("Hi, im initializing") 
-
         pygame.init()
         
         pygame.display.set_caption("plat former")
@@ -46,10 +43,10 @@ class Game:
             "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide"))
         }
 
-        self.clouds = Clouds(self.assets["clouds"], count = 16)
+        self.clouds = Clouds(self.assets["clouds"], count = 60)
         
         self.players = {}
-        for i in range(1,2):
+        for i in range(1,3):
             self.players[i] = Player(self, (50 + 10 * i, 50), (8, 15))
         
         self.scroll = [0, 0]
@@ -85,7 +82,7 @@ class Game:
             self.tilemap.render(self.display, offset = render_scroll)
 
             for p in self.players.values():
-                p.get_inputs() #,(self.movement[1] - self.movement[0],0))
+                p.get_inputs() #,(self.movement[1] - self.movement[0],0)
 
             for p in self.players.values():
                 p.update(self.tilemap) #,(self.movement[1] - self.movement[0],0))
@@ -152,6 +149,6 @@ p2_inputs = {  # Look up direction based on key symbol
             }
 
 g.players[1].set_inputmap(p1_inputs)
-#g.players[2].set_inputmap(p2_inputs)
+g.players[2].set_inputmap(p2_inputs)
 
 g.run()

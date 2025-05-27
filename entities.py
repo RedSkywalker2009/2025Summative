@@ -83,7 +83,7 @@ class Player(PhyisicsEntity):
         self.super_jumps = 1
         self.wall_slide = False
         self.dashing = 0
-        self.inputs = {}
+        self.s = {}
 
     def update(self, tilemap):
         super().update(tilemap)
@@ -121,7 +121,7 @@ class Player(PhyisicsEntity):
         if self.dashing < 0:
             self.dashing = min(0, self.dashing + 1)
         if abs(self.dashing) > 50:
-            self.velosity[0] = abs(self.dashing) / self.dashing * 8
+            self.velosity[0] = abs(self.dashing) / self.dashing * 10
             if abs(self.dashing) == 51:
                 self.velosity[0] *= 0.1
         
@@ -142,6 +142,8 @@ class Player(PhyisicsEntity):
                 self.air_time = 5
                 if self.jumps > 1:
                     self.jumps = max(1, self.jumps - 1)
+                elif self.jumps < 1:
+                    self.jumps = min(1, self.jumps + 1)
                 return True
             elif not self.flip and self.last_movement[0] > 0:
                 self.velosity[0] = -2.5
@@ -149,12 +151,19 @@ class Player(PhyisicsEntity):
                 self.air_time = 5
                 if self.jumps > 1:
                     self.jumps = max(1, self.jumps - 1)
+                elif self.jumps < 1:
+                    self.jumps = min(1, self.jumps + 1)
                 return True
             
         elif self.jumps:
-            self.velosity[1] = -4
+            if self.air_time <= 5:
+                self.velosity[1] = -4.5
+            else:
+                self.velosity[1] = -3.5
             self.jumps -= 1
             self.air_time = 5
+            
+                
 
     def super_jump(self):
         if self.super_jumps:
