@@ -26,7 +26,7 @@ class Game:
         self.display = pygame.Surface((Game.Resolution[0]/3, Game.Resolution[1]/3))
         #setting framerate
         self.clock = pygame.time.Clock()
-
+        self.tilemap = Tilemap(self, tile_size=16)
         self.movement = [False,False]
 
         self.assets = {
@@ -47,11 +47,11 @@ class Game:
         
         self.players = {}
         for i in range(1,3):
-            self.players[i] = Player(self, (50 + 10 * i, 50), (8, 15))
+            self.players[i] = Player(self, i, (50 + 10 * i, 50), (8, 15))
         
         self.scroll = [0, 0]
 
-        self.tilemap = Tilemap(self, tile_size=16)
+        
 
 
     def run (self):
@@ -122,8 +122,10 @@ class Game:
         for p in self.players.values():
             p.on_key_release(symbol, mod)
 
+
 g = Game()
-p1_inputs = {  # Look up direction based on key symbol
+p_inputs = {}
+p_inputs[1] = {  # Look up direction based on key symbol
             pygame.K_w: "JUMP",
             pygame.K_s: "CROUCH",
             pygame.K_a: "LEFT",
@@ -133,9 +135,15 @@ p1_inputs = {  # Look up direction based on key symbol
             pygame.K_q: "SPECIAL2",
             pygame.K_z: "ATTACK1",
             pygame.K_x: "ATTACK2",
-            pygame.K_c: "ATTACK3"
+            pygame.K_c: "ATTACK3",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
+            pygame.CONTROLLER_BUTTON_A: "JUMP",
+            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
+            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+
             }
-p2_inputs = {  # Look up direction based on key symbol
+p_inputs[2] = {  # Look up direction based on key symbol
             pygame.K_i: "JUMP",
             pygame.K_k: "CROUCH",
             pygame.K_j: "LEFT",
@@ -145,10 +153,31 @@ p2_inputs = {  # Look up direction based on key symbol
             pygame.K_o: "SPECIAL2",
             pygame.K_m: "ATTACK1",
             pygame.K_COMMA: "ATTACK2",
-            pygame.K_PERIOD: "ATTACK3"
+            pygame.K_PERIOD: "ATTACK3",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
+            pygame.CONTROLLER_BUTTON_A: "JUMP",
+            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
+            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+            }
+p_inputs[3] = {  # Look up direction based on key symbol
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
+            pygame.CONTROLLER_BUTTON_A: "JUMP",
+            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
+            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+            }
+p_inputs[4] = {  # Look up direction based on key symbol
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
+            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
+            pygame.CONTROLLER_BUTTON_A: "JUMP",
+            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
+            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
             }
 
-g.players[1].set_inputmap(p1_inputs)
-g.players[2].set_inputmap(p2_inputs)
+
+for p in g.players.values():
+    p.set_inputmap(p_inputs[p.id])
+
 
 g.run()

@@ -76,7 +76,7 @@ class PhyisicsEntity:
         surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
 
 class Player(PhyisicsEntity):
-    def __init__(self, game, pos, size):
+    def __init__(self, game, id, pos, size):
         super().__init__(game,"player", pos, size)
         self.air_time = 0
         self.jumps = 2
@@ -84,6 +84,7 @@ class Player(PhyisicsEntity):
         self.wall_slide = False
         self.dashing = 0
         self.s = {}
+        self.id = id
 
     def update(self, tilemap):
         super().update(tilemap)

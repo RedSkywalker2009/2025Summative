@@ -5,16 +5,19 @@ import os
 BASE_IMG_PATH = "__pycache__/ninja_game/data/images/"
 
 class Utils:
-    def load_image(path):
-        img = pygame.image.load(BASE_IMG_PATH + path).convert()
+    def load_image(path, size = None):
+        if not size is None:
+            img = pygame.transform.scale(pygame.image.load(BASE_IMG_PATH + path), size).convert()
+        else:
+            img = pygame.image.load(BASE_IMG_PATH + path).convert()
         img.set_colorkey((0,0,0))
         return img
-    def load_images(path):
+    def load_images(path, size = None):
         images = []
         print(path)
         for img_name in os.listdir(BASE_IMG_PATH + path):
             print(path + "/" + img_name)
-            images.append(Utils.load_image( path + "/" + img_name))
+            images.append(Utils.load_image( path + "/" + img_name, size))
         return images
     
 class Animations:
