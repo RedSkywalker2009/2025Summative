@@ -7,6 +7,7 @@ from utils import Utils
 from utils import Animations
 from tilemap import Tilemap
 from clouds import Clouds
+from Menu import Menu, Options, CommandOption
 
 
 class Game:
@@ -17,7 +18,6 @@ class Game:
     def __init__(self):
 
         pygame.init()
-        
         pygame.display.set_caption("plat former")
         #creating the screen and setting the size
         # consider 1920x1080
@@ -42,6 +42,8 @@ class Game:
             "player/slide" : Animations(Utils.load_images("entities/player/slide")),
             "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide"))
         }
+        self.isMenuOpen = False
+        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Save", self.Save), CommandOption("Quit", self.Quit)])
 
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         
@@ -52,6 +54,12 @@ class Game:
         self.scroll = [0, 0]
 
         
+    def Save():
+        pass
+
+    def Quit():
+         pygame.quit()
+         sys.exit()
 
 
     def run (self):
@@ -81,11 +89,14 @@ class Game:
 
             self.tilemap.render(self.display, offset = render_scroll)
 
-            for p in self.players.values():
-                p.get_inputs() #,(self.movement[1] - self.movement[0],0)
+            if (self.isMenuOpen == False):
+                for p in self.players.values():
+                    p.get_inputs() #,(self.movement[1] - self.movement[0],0)
 
-            for p in self.players.values():
-                p.update(self.tilemap) #,(self.movement[1] - self.movement[0],0))
+                for p in self.players.values():
+                    p.update(self.tilemap) #,(self.movement[1] - self.movement[0],0))
+            else:
+                self.menu.draw(self.display)
 
             for p in self.players.values():
                 p.render(self.display, render_scroll)
@@ -94,17 +105,19 @@ class Game:
         # set an event to close the game
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                   self.Quit()
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    self.isMenuOpen = True if not self.isMenuOpen else False
 
-                if event.type == pygame.KEYDOWN:
-                    self.on_key_press(event.key, event.mod)
-                if event.type == pygame.KEYUP:
-                    self.on_key_release(event.key, event.mod) 
+                if (not self.isMenuOpen):
+                   if event.type == pygame.KEYDOWN:
+                        self.on_key_press(event.key, event.mod)
+                   if event.type == pygame.KEYUP:
+                        self.on_key_release(event.key, event.mod)
+                else:
+                    if event.type == pygame.KEYDOWN:
+                        self.menu.on_key_press(event.key, event.mod) 
                 
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()) ,(0,0))
 
@@ -116,6 +129,7 @@ class Game:
     def on_key_press(self, symbol: int, mod: int) -> bool:
         for p in self.players.values():
             p.on_key_press(symbol, mod)
+        
 
 
     def on_key_release(self, symbol: int, mod: int) -> bool:
