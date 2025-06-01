@@ -224,10 +224,10 @@ class Player(PhyisicsEntity):
                 self.inputs["JUMP"] = False
             
             if "LEFT" in self.inputs and self.inputs["LEFT"]:
-                deltax -= 1
+                deltax -= 2
 
             if "RIGHT" in self.inputs and self.inputs["RIGHT"]:
-                deltax += 1
+                deltax += 2
 
             if "SPECIAL1" in self.inputs and self.inputs["SPECIAL1"]:
                 self.dash()

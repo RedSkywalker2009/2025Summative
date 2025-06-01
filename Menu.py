@@ -4,7 +4,7 @@ class Menu:
 
     def __init__ (self, options):
         self.fontsize = 32
-        self.font = pygame.font.Font('freesansbold.ttf', self.fontsize)
+        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
         self.options = options
         self.selected = options[0]
 
@@ -19,9 +19,9 @@ class Menu:
         
         selectedIndex = self.options.index(self.selected)
 
-        if (symbol == pygame.K_s):
+        if (symbol == pygame.K_s) or (symbol == pygame.K_DOWN):
             selectedIndex += 1
-        elif (symbol == pygame.K_w):
+        elif (symbol == pygame.K_w) or (symbol == pygame.K_UP):
             selectedIndex -= 1
         else:
             self.selected.on_key_press(symbol, mod)
@@ -53,7 +53,7 @@ class Options:
 
         if (symbol == pygame.K_d) or (symbol == pygame.K_RIGHT):
             selectedValueIndex += 1
-        elif (symbol == pygame.K_a):
+        elif (symbol == pygame.K_a) or (symbol == pygame.K_LEFT):
             selectedValueIndex -= 1
 
         if selectedValueIndex >= len(self.options):
@@ -75,6 +75,16 @@ class CommandOption(Options):
         if (symbol == pygame.K_RETURN or symbol == pygame.K_SPACE):
             self.command()
 
-    
+class Win:
+
+    def __init__ (self, game):
+        self.fontsize = 32
+        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
+        self.game = game
+
+
+    def draw (self, screen):
+        screen.blit(self.font.render(("winner"), True, (0,0,0)), (0,0))
+
     
     
