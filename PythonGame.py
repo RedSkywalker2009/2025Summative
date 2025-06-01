@@ -14,7 +14,7 @@ class Game:
 
     Resolution = (1920, 1080)
     tile_size = 16
-    player_size = (14,18)
+    player_size = (12,18)
 
     xIncx = {
         "Easy" : 0,
@@ -31,7 +31,7 @@ class Game:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_caption("plat former")
+        pygame.display.set_caption("2025 summitive")
         #creating the screen and setting the size
         # consider 1920x1080
         self.screen = pygame.display.set_mode(Game.Resolution)
@@ -76,7 +76,7 @@ class Game:
     def LoadLevel(self):
         self.players = {}
         for i in range(1, Game.players_num[self.config.get("Players", "1 Player")] + 1):
-            self.players[i] = Player(self, i, (200 + 10 * i, 330), (8, 15))
+            self.players[i] = Player(self, i, (200 + 10 * i, 330), self.player_size, self.tile_size)
 
         for p in self.players.values():
             p.set_inputmap(self.p_inputs[p.id])
@@ -84,8 +84,8 @@ class Game:
         self.tilemap.load("map.json")
         self.scroll = [0, 0]
         self.minx = 0
-        self.miny = 380
-        self.finishline = 1228
+        self.miny = (380/16) * Game.tile_size
+        self.finishline = (1228/16) * Game.tile_size
         self.winner = False
 
         

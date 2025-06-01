@@ -1,12 +1,13 @@
 import pygame
 
 class PhyisicsEntity:
-    def __init__(self,game,e_type,pos,size):
+    def __init__(self,game,e_type, pos, size, tilesize):
         self.game = game
         self.type = e_type  
         self.pos = list(pos)
         self.size = size
         self.velosity = [0,0]
+        self.tile_size = tilesize
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
         self.actions = ""
@@ -32,11 +33,11 @@ class PhyisicsEntity:
         movement = self.movement
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
-        frame_movement = (movement[0] + self.velosity[0], movement[1] + self.velosity[1])
+        frame_movement = (movement[0] + int(self.velosity[0] * self.tile_size/16), movement[1] + int(self.velosity[1] * self.tile_size/16))
 
         self.pos[0] += frame_movement[0]
 
-        entity_rect =self.rect()
+        entity_rect = self.rect()
         for rects in tilemap.physics_rects_around(self.pos):
             if entity_rect.colliderect(rects):
                 if frame_movement[0] > 0:
@@ -48,7 +49,7 @@ class PhyisicsEntity:
                 self.pos[0] = entity_rect.x
 
         self.pos[1] += frame_movement[1]
-        entity_rect =self.rect()
+        entity_rect = self.rect()
         for rects in tilemap.physics_rects_around(self.pos):
             if entity_rect.colliderect(rects):
                 if frame_movement[1] > 0:
@@ -78,8 +79,8 @@ class PhyisicsEntity:
         surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
 
 class Player(PhyisicsEntity):
-    def __init__(self, game, id, pos, size):
-        super().__init__(game,"player", pos, size)
+    def __init__(self, game, id, pos, size, tile_size):
+        super().__init__(game,"player", pos, size, tile_size)
         self.air_time = 0
         self.jumps = 2
         self.super_jumps = 1
@@ -225,10 +226,10 @@ class Player(PhyisicsEntity):
                 self.inputs["JUMP"] = False
             
             if "LEFT" in self.inputs and self.inputs["LEFT"]:
-                deltax -= 2
+                deltax -= int(self.tile_size/8)
 
             if "RIGHT" in self.inputs and self.inputs["RIGHT"]:
-                deltax += 2
+                deltax += int(self.tile_size/8)
 
             if "SPECIAL1" in self.inputs and self.inputs["SPECIAL1"]:
                 self.dash()

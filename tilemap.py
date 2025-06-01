@@ -37,7 +37,7 @@ class Tilemap:
 
         self.tilemap = map_data["tilemap"]
         self.offgrid_tiles = map_data["offgrid"]
-        self.tile_size = map_data["tile_size"]
+        #self.tile_size = map_data["tile_size"]
     
     def physics_rects_around(self, pos):
         rects = []
@@ -50,7 +50,7 @@ class Tilemap:
     def render(self, surf, offset = (0,0)):
 
         for tile in self.offgrid_tiles:
-            surf.blit(self.game.assets[tile["type"]][tile["variant"]],(tile["pos"][0] - offset[0], tile["pos"][1] - offset[1]))
+            surf.blit(self.game.assets[tile["type"]][tile["variant"]],(tile["pos"][0] * self.tile_size/16 - offset[0] , tile["pos"][1] * self.tile_size/16 - offset[1]))
 
         for x in range(offset[0] // self.tile_size, 1 + (offset[0] + surf.get_width()) // self.tile_size):
              for y in range(offset[1] // self.tile_size, 1 + (offset[1] + surf.get_height()) // self.tile_size):
