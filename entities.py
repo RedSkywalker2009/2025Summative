@@ -72,6 +72,8 @@ class PhyisicsEntity:
             self.velosity[1] = 0
 
         self.animations.update()
+
+
     def render(self, surf, offset = (0,0)):
         surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
 
@@ -85,11 +87,18 @@ class Player(PhyisicsEntity):
         self.dashing = 0
         self.s = {}
         self.id = id
+        self.dying = False
+        self.dead = False
 
     def update(self, tilemap):
         super().update(tilemap)
 
         movement = self.movement
+
+        if (self.dying):
+            self.set_actions("die")
+            self.dead = self.animations.done
+            return
 
         self.air_time += 1
         if self.collisions["down"]:
@@ -107,7 +116,7 @@ class Player(PhyisicsEntity):
             else:
                 self.flip = True
             self.set_actions("wall_slide")
-        
+    
 
         if not self.wall_slide :
             if self.air_time > 4:
@@ -232,6 +241,8 @@ class Player(PhyisicsEntity):
                 deltay += 0
             if "ATTACK3" in self.inputs and self.inputs["ATTACK3"]:
                 deltay += 0
+            if "DIE" in self.inputs and self.inputs["DIE"]:
+                self.dying = True
 
         self.movement = (deltax, deltay)
         return

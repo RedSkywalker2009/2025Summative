@@ -13,7 +13,11 @@ from Menu import Menu, Options, CommandOption
 class Game:
 
     Resolution = (1920, 1080)
-
+    xIncx = {
+        "Easy" : 0.2,
+        "Medium" : 0.5,
+        "Hard" : 0.8
+    }
 
     def __init__(self):
 
@@ -37,31 +41,40 @@ class Game:
             "player" : Utils.load_image("entities/player.png"),
             "clouds": Utils.load_images("clouds"),
             "player/idle" : Animations(Utils.load_images("entities/player/idle"), img_dur=6),
+            "player/die" : Animations(Utils.load_images("entities/player/die"), loop=False),
             "player/run" : Animations(Utils.load_images("entities/player/run"), img_dur=4),
             "player/jump" : Animations(Utils.load_images("entities/player/jump")),
             "player/slide" : Animations(Utils.load_images("entities/player/slide")),
             "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide"))
         }
+
+        self.config = {}
         self.isMenuOpen = False
         self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Save", self.Save), CommandOption("Quit", self.Quit)])
+
+        self.Save()
 
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         
         self.players = {}
-        for i in range(1,2):
-            self.players[i] = Player(self, i, (200 + 10 * i, 260), (8, 15))
+        for i in range(1,3):
+            self.players[i] = Player(self, i, (200 + 10 * i, 350), (8, 15))
 
         self.tilemap.load("map.json")
         
         self.scroll = [0, 0]
+        self.minx = 0
+        self.miny = 380
 
         
     def Save(self):
-        pass
+        for p in self.menu.options:
+            self.config[p.name] = p.value
 
     def Quit(self):
          pygame.quit()
          sys.exit()
+        
 
 
     def run (self):
@@ -72,19 +85,29 @@ class Game:
 
             x = 0
             y = 0
+            num_players = 0
             for p in self.players.values():
+                if p.dead:
+                    continue
+                if (p.rect().centerx < self.minx or p.rect().centery > self.miny):
+                    p.dying = True
+                num_players += 1
                 x += p.rect().centerx
                 y += p.rect().centery
             
             #compute the average position of the players
-            x = x / len(self.players)
-            y = y / len(self.players)
+            if (num_players > 0):
+                x = x / num_players
+                y = y / num_players
+                self.scroll[0] += (x - self.display.get_width()/2 - self.scroll[0]) /10
+                self.scroll[1] += (y - self.display.get_height()/2 - self.scroll[1]) /10
 
 
-            self.scroll[0] += (x - self.display.get_width()/2 - self.scroll[0]) /10
-            self.scroll[1] += (y - self.display.get_height()/2 - self.scroll[1]) /10
 
-            render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+            render_scroll = (max(int(self.minx), int(self.scroll[0])), min(int(self.scroll[1]), int(self.miny)))
+            
+            if (num_players > 0):
+                self.minx += Game.xIncx[self.config.get("Difficulty", "Easy")]
 
             self.clouds.update()
             self.clouds.render(self.display, offset = render_scroll)
@@ -93,14 +116,20 @@ class Game:
 
             if (self.isMenuOpen == False):
                 for p in self.players.values():
+                    if p.dead or p.dying:
+                        continue
                     p.get_inputs() #,(self.movement[1] - self.movement[0],0)
 
                 for p in self.players.values():
+                    if p.dead:
+                        continue
                     p.update(self.tilemap) #,(self.movement[1] - self.movement[0],0))
             else:
                 self.menu.draw(self.display)
 
             for p in self.players.values():
+                if p.dead:
+                    continue
                 p.render(self.display, render_scroll)
 
             
@@ -152,12 +181,12 @@ p_inputs[1] = {  # Look up direction based on key symbol
             pygame.K_z: "ATTACK1",
             pygame.K_x: "ATTACK2",
             pygame.K_c: "ATTACK3",
+            pygame.K_y: "DIE",
             pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
             pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
             pygame.CONTROLLER_BUTTON_A: "JUMP",
             pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
             pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
-
             }
 p_inputs[2] = {  # Look up direction based on key symbol
             pygame.K_i: "JUMP",
