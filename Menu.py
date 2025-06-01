@@ -51,7 +51,7 @@ class Options:
         
         selectedValueIndex = self.options.index(self.value)
 
-        if (symbol == pygame.K_d):
+        if (symbol == pygame.K_d) or (symbol == pygame.K_RIGHT):
             selectedValueIndex += 1
         elif (symbol == pygame.K_a):
             selectedValueIndex -= 1
@@ -72,7 +72,7 @@ class CommandOption(Options):
 
      def on_key_press(self, symbol: int, mod: int) -> bool:
         
-        if (symbol == pygame.K_RETURN):
+        if (symbol == pygame.K_RETURN or symbol == pygame.K_SPACE):
             self.command()
 
     

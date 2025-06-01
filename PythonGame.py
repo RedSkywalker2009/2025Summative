@@ -48,16 +48,18 @@ class Game:
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         
         self.players = {}
-        for i in range(1,3):
-            self.players[i] = Player(self, i, (50 + 10 * i, 50), (8, 15))
+        for i in range(1,2):
+            self.players[i] = Player(self, i, (200 + 10 * i, 260), (8, 15))
+
+        self.tilemap.load("map.json")
         
         self.scroll = [0, 0]
 
         
-    def Save():
+    def Save(self):
         pass
 
-    def Quit():
+    def Quit(self):
          pygame.quit()
          sys.exit()
 

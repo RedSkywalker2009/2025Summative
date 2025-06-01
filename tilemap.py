@@ -1,4 +1,5 @@
 import pygame
+import json
 
 NEIGHBOR_OFFSETS = [(-1,0), (-1,1), (-1,-1), (0,0), (1,0), (1,1), (1,-1), (0,1), (0,-1)] 
 
@@ -11,32 +12,7 @@ class Tilemap:
         self.tilemap = {}
         self.offgrid_tiles = []
 
-        for i in range(10):
-            self.setTile(20+i, 20, "grass", 1) 
-            self.setTile(5, 20+i,"stone", 1) 
-            self.setTile(3+i, 5, "grass", 1) 
-            self.setTile(15, 19+i,"stone", 1) 
-            self.setTile(2, 10+i,"stone", 1) 
-            self.setTile(0+i, 40, "grass", 1) 
-            self.setTile(10+i, 40, "grass", 1) 
-            self.setTile(-10+i, 40, "grass", 1) 
-            self.setTile(20+i, 40, "grass", 1) 
-            self.setTile(30+i, 40, "grass", 1) 
-            self.setTile(-20+i, 40, "grass", 1) 
-            self.setTile(6+i, 9, "grass", 1) 
-            self.setTile(4, 20+i,"stone", 1)
-            self.setTile(29+i, 16, "grass", 1) 
-            self.setTile(11, 22+i,"stone", 1) 
-            self.setTile(21, 10+i,"stone", 1) 
-            self.setTile(27+i, 19, "grass", 1) 
-            self.setTile(16, 17+i,"stone", 1) 
-            self.setTile(7+i, 1, "grass", 1) 
-            self.setTile(30, 3+i,"stone", 1) 
-            self.setTile(11, 22+i,"stone", 1) 
-
-    def setTile(self, x, y, type, variant):
-        self.tilemap[str(x) + ';' + str(y)] = {"type": type, "variant": variant, "pos": (x, y)}
-    
+       
     def tiles_around(self,pos):
         
         tiles = []
@@ -48,6 +24,20 @@ class Tilemap:
             if check_loc in self.tilemap:
                 tiles.append(self.tilemap[check_loc])
         return tiles
+    
+    def save (self, path):
+        f = open(path, "w")
+        json.dump({"tilemap": self.tilemap, "tile_size" : self.tile_size, "offgrid" : self.offgrid_tiles}, f)
+        f.close()
+    
+    def load (self, path):
+        f = open(path, "r")
+        map_data = json.load(f)
+        f.close()
+
+        self.tilemap = map_data["tilemap"]
+        self.offgrid_tiles = map_data["offgrid"]
+        self.tile_size = map_data["tile_size"]
     
     def physics_rects_around(self, pos):
         rects = []
