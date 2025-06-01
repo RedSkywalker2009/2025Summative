@@ -13,7 +13,8 @@ from Menu import Menu, Options, CommandOption,Win
 class Game:
 
     Resolution = (1920, 1080)
-    
+    tile_size = 16
+    player_size = (14,18)
 
     xIncx = {
         "Easy" : 0,
@@ -35,36 +36,40 @@ class Game:
         # consider 1920x1080
         self.screen = pygame.display.set_mode(Game.Resolution)
 
-        self.display = pygame.Surface((Game.Resolution[0]/3, Game.Resolution[1]/3))
+        screen_width = Game.tile_size * 42
+        screen_height = (Game.Resolution[1]/Game.Resolution[0]) * screen_width
+        self.display = pygame.Surface( (screen_width, int(screen_height)) )
         #setting framerate
         self.clock = pygame.time.Clock()
-        self.tilemap = Tilemap(self, tile_size=16)
+        self.tilemap = Tilemap(self, Game.tile_size)
         self.movement = [False,False]
         self.p_inputs = {}
         self.config = {}
         self.winner = False
-        self.winscreen = Win(self)
-
+        
         self.assets = {
-            "decor" : Utils.load_images("tiles/decor"),
-            "grass" : Utils.load_images("tiles/grass"),
+            "decor" : Utils.load_images("tiles/decor", (Game.tile_size, Game.tile_size)),
+            "grass" : Utils.load_images("tiles/grass",(Game.tile_size, Game.tile_size)),
             "large_decor" : Utils.load_images("tiles/large_decor"),
-            "stone" : Utils.load_images("tiles/stone"),
-            "player" : Utils.load_image("entities/player.png"),
+            "stone" : Utils.load_images("tiles/stone",(Game.tile_size, Game.tile_size)),
+            "player" : Utils.load_image("entities/player.png",(Game.tile_size, Game.tile_size)),
             "clouds": Utils.load_images("clouds"),
-            "player/idle" : Animations(Utils.load_images("entities/player/idle"), img_dur=6),
-            "player/die" : Animations(Utils.load_images("entities/player/die"), loop=False),
-            "player/run" : Animations(Utils.load_images("entities/player/run"), img_dur=4),
-            "player/jump" : Animations(Utils.load_images("entities/player/jump")),
-            "player/slide" : Animations(Utils.load_images("entities/player/slide")),
-            "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide"))
+            "player/idle" : Animations(Utils.load_images("entities/player/idle",Game.player_size), img_dur=6),
+            "player/die" : Animations(Utils.load_images("entities/player/die",Game.player_size), loop=False),
+            "player/run" : Animations(Utils.load_images("entities/player/run",Game.player_size), img_dur=4),
+            "player/jump" : Animations(Utils.load_images("entities/player/jump",Game.player_size)),
+            "player/slide" : Animations(Utils.load_images("entities/player/slide",Game.player_size)),
+            "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide",Game.player_size)),
+            "Titlescreen" : Animations(Utils.load_images("Titlescreen", size = (250, 250))),
+            "Winscreen" : Animations(Utils.load_images("Winscreen", size = (250, 250))),
         }
 
         self.isMenuOpen = False
-        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Save", self.Save), CommandOption("Quit", self.Quit)])
+        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
         self.Save(False)
         self.clouds = Clouds(self.assets["clouds"], count = 60)
-        
+        self.winscreen = Win(self, self.assets["Winscreen"])
+
 
 
 

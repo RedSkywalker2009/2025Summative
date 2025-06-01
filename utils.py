@@ -2,7 +2,7 @@ import pygame
 
 import os
 
-BASE_IMG_PATH = "__pycache__/ninja_game/data/images/"
+BASE_IMG_PATH = "data/images/"
 
 class Utils:
     def load_image(path, size = None):

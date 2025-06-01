@@ -2,17 +2,19 @@ import pygame
 
 class Menu:
 
-    def __init__ (self, options):
+    def __init__ (self, options, img):
         self.fontsize = 32
         self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
         self.options = options
         self.selected = options[0]
+        self.img = img
 
 
     def draw (self, screen):
-        j = 0
+        j = 150
+        screen.blit(self.img.img(), (175,-50))
         for i in self.options:
-            i.draw(screen, (0,j), self.font, (255, 255, 255) if i == self.selected else None )
+            i.draw(screen, (200,j), self.font, (255, 255, 255) if i == self.selected else None )
             j = j + (self.fontsize + 2)
     
     def on_key_press(self, symbol: int, mod: int) -> bool:
@@ -39,6 +41,7 @@ class Options:
         self.options = options
         self.value = value
 
+        
     def draw (self, screen:pygame.Surface, pos, font:pygame.font, colour = None):
         colour = colour if not colour == None else (55,55,55)
         if colour == (255,255,255):
@@ -77,14 +80,15 @@ class CommandOption(Options):
 
 class Win:
 
-    def __init__ (self, game):
-        self.fontsize = 32
+    def __init__ (self, game, img):
+        self.fontsize = 50
         self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
         self.game = game
-
+        self.img = img
 
     def draw (self, screen):
-        screen.blit(self.font.render(("winner"), True, (0,0,0)), (0,0))
+        screen.blit(self.img.img(), (175,50))
+        
 
     
     
