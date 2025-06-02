@@ -1,5 +1,6 @@
 import pygame
 import json
+import math
 
 NEIGHBOR_OFFSETS = [(-1,0), (-1,1), (-1,-1), (0,0), (1,0), (1,1), (1,-1), (0,1), (0,-1)] 
 
@@ -17,7 +18,7 @@ class Tilemap:
         
         tiles = []
 
-        tile_loc = (int(pos[0] // self.tile_size), int(pos[1] // self.tile_size))
+        tile_loc = (math.ceil(pos[0] / self.tile_size), math.ceil(pos[1] / self.tile_size))
         
         for offset in NEIGHBOR_OFFSETS:
             check_loc = str(tile_loc[0] + offset[0]) + ";" + str(tile_loc[1] + offset[1])

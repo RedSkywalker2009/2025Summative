@@ -1,4 +1,5 @@
 import pygame
+import math
 
 class PhyisicsEntity:
     def __init__(self,game,e_type, pos, size, tilesize):
@@ -33,7 +34,7 @@ class PhyisicsEntity:
         movement = self.movement
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
-        frame_movement = (movement[0] + int(self.velosity[0] * self.tile_size/16), movement[1] + int(self.velosity[1] * self.tile_size/16))
+        frame_movement = (movement[0] + math.ceil(self.velosity[0] * self.tile_size/16), movement[1] + math.ceil(self.velosity[1] * self.tile_size/16))
 
         self.pos[0] += frame_movement[0]
 
@@ -55,6 +56,8 @@ class PhyisicsEntity:
                 if frame_movement[1] > 0:
                     entity_rect.bottom = rects.top
                     self.collisions["down"] = True
+                else:
+                    print("hi")
                 if frame_movement[1] < 0:
                     entity_rect.top = rects.bottom
                     self.collisions["up"] = True
@@ -67,7 +70,7 @@ class PhyisicsEntity:
         
         self.last_movement = movement
 
-        self.velosity[1] = min(2,self.velosity[1] + 0.201)
+        self.velosity[1] = min(2, self.velosity[1] + (0.201) )
 
         if self.collisions["down"] or self.collisions["up"]:
             self.velosity[1] = 0
@@ -158,8 +161,8 @@ class Player(PhyisicsEntity):
                     self.jumps = min(1, self.jumps + 1)
                 return True
             elif not self.flip and self.last_movement[0] > 0:
-                self.velosity[0] = -2.5
-                self.velosity[1] = -3.5
+                self.velosity[0] = -2.5 
+                self.velosity[1] = -3.5 
                 self.air_time = 5
                 if self.jumps > 1:
                     self.jumps = max(1, self.jumps - 1)
@@ -188,9 +191,9 @@ class Player(PhyisicsEntity):
         if self.super_jumps > 0:
             if not self.dashing:
                 if self.flip:
-                    self.dashing = -60
+                    self.dashing = -60 
                 else:
-                    self.dashing = 60
+                    self.dashing = 60 
 
     def set_inputmap(self, inputs):
         self.input_map = inputs

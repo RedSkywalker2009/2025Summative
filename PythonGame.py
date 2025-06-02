@@ -13,8 +13,8 @@ from Menu import Menu, Options, CommandOption,Win
 class Game:
 
     Resolution = (1920, 1080)
-    tile_size = 16
-    player_size = (12,18)
+    tile_size = 64
+    player_size = (48, 72)
 
     xIncx = {
         "Easy" : 0,
@@ -50,13 +50,13 @@ class Game:
         self.assets = {
             "decor" : Utils.load_images("tiles/decor", (Game.tile_size, Game.tile_size)),
             "grass" : Utils.load_images("tiles/grass",(Game.tile_size, Game.tile_size)),
-            "large_decor" : Utils.load_images("tiles/large_decor"),
+            "large_decor" : Utils.load_images("tiles/large_decor", scale= Game.tile_size/16),
             "stone" : Utils.load_images("tiles/stone",(Game.tile_size, Game.tile_size)),
             "player" : Utils.load_image("entities/player.png",(Game.tile_size, Game.tile_size)),
-            "clouds": Utils.load_images("clouds"),
+            "clouds": Utils.load_images("clouds", scale= Game.tile_size/16),
             "player/idle" : Animations(Utils.load_images("entities/player/idle",Game.player_size), img_dur=6),
             "player/die" : Animations(Utils.load_images("entities/player/die",Game.player_size), loop=False),
-            "player/run" : Animations(Utils.load_images("entities/player/run",Game.player_size), img_dur=4),
+            "player/run" : Animations(Utils.load_images("entities/reaper/run",Game.player_size), img_dur=4),
             "player/jump" : Animations(Utils.load_images("entities/player/jump",Game.player_size)),
             "player/slide" : Animations(Utils.load_images("entities/player/slide",Game.player_size)),
             "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide",Game.player_size)),
@@ -71,12 +71,15 @@ class Game:
         self.winscreen = Win(self, self.assets["Winscreen"])
 
 
+    def scale(self, value):
+        return value * self.tile_size/16
+
 
 
     def LoadLevel(self):
         self.players = {}
         for i in range(1, Game.players_num[self.config.get("Players", "1 Player")] + 1):
-            self.players[i] = Player(self, i, (200 + 10 * i, 330), self.player_size, self.tile_size)
+            self.players[i] = Player(self, i, (self.scale(200 + 10 * i), self.scale(330)), self.player_size, self.tile_size)
 
         for p in self.players.values():
             p.set_inputmap(self.p_inputs[p.id])
@@ -84,8 +87,8 @@ class Game:
         self.tilemap.load("map.json")
         self.scroll = [0, 0]
         self.minx = 0
-        self.miny = (380/16) * Game.tile_size
-        self.finishline = (1228/16) * Game.tile_size
+        self.miny = self.scale(380)
+        self.finishline = self.scale(1228)
         self.winner = False
 
         
@@ -138,7 +141,7 @@ class Game:
             
             if (not self.isPaused()):
                 if (num_players > 0):
-                    self.minx += Game.xIncx[self.config.get("Difficulty", "Easy")]
+                    self.minx += self.scale(Game.xIncx[self.config.get("Difficulty", "Easy")])
 
             self.clouds.update()
             self.clouds.render(self.display, offset = render_scroll)
