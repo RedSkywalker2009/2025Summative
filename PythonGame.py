@@ -90,9 +90,9 @@ class Game:
         for i_key in self.tilemap.tilemap.keys():
             i = self.tilemap.tilemap[i_key]
             if i["type"] == "turret":
-                xdir = 1 if i["variant"] == "1" else -1 if i["variant"] == "2" else 0 
-                ydir = 1 if i["variant"] == "3" else -1 if i["variant"] == "4" else 0 
-                self.objects.append(Turret(self, (self.scale(i["pos"][0]), self.scale(i["pos"][1])), self.player_size, self.tile_size, xdir, ydir))
+                xdir = 1 if i["variant"] == 0 else -1 if i["variant"] == 1 else 0 
+                ydir = 1 if i["variant"] == 2 else -1 if i["variant"] == 3 else 0 
+                self.objects.append(Turret(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size, xdir, ydir))
                 delete_keys.append(i_key)
 
         #cleanup
