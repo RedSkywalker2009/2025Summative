@@ -215,6 +215,7 @@ class Player(PhyisicsEntity):
                 else:
                     self.dashing = 60 
 
+
     def set_inputmap(self, inputs):
         self.input_map = inputs
         # Stores the direction string and the state of the direction
