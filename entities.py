@@ -12,7 +12,7 @@ class PhyisicsEntity:
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
         self.actions = ""
-        self.anim_offset = (-3,-3)
+        self.anim_offset = (0,0) #(-3,-3)
         self.flip = False
         self.set_actions("idle")
         self.input_map = {}
@@ -49,7 +49,7 @@ class PhyisicsEntity:
         movement = self.movement
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
-        frame_movement = (movement[0] + math.ceil(self.velosity[0] * self.tile_size/16), movement[1] + math.ceil(self.velosity[1] * self.tile_size/16))
+        frame_movement = (movement[0] + (self.velosity[0] * self.tile_size/16), movement[1] + (self.velosity[1] * self.tile_size/16))
 
         self.pos[0] += frame_movement[0]
 
@@ -94,6 +94,11 @@ class PhyisicsEntity:
 
     def render(self, surf, offset = (0,0)):
         surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
+        if (self.game.draw_hitbox):
+            rect = self.rect()  
+            rect.topleft = (rect.left - offset[0], rect.top - offset[1])
+            pygame.draw.rect(surf, (0,0,100), rect)
+
 
 class Player(PhyisicsEntity):
     def __init__(self, game, id, pos, size, tile_size):
@@ -167,7 +172,7 @@ class Player(PhyisicsEntity):
     def jump(self):
         if self.wall_slide:
             if self.flip and self.last_movement[0] < 0:
-                self.velosity[0] = 2.5
+                self.velosity[0] = 3.5
                 self.velosity[1] = -3.5
                 self.air_time = 5
                 if self.jumps > 1:
@@ -176,7 +181,7 @@ class Player(PhyisicsEntity):
                     self.jumps = min(1, self.jumps + 1)
                 return True
             elif not self.flip and self.last_movement[0] > 0:
-                self.velosity[0] = -2.5 
+                self.velosity[0] = -3.5 
                 self.velosity[1] = -3.5 
                 self.air_time = 5
                 if self.jumps > 1:
@@ -193,7 +198,6 @@ class Player(PhyisicsEntity):
             self.jumps -= 1
             self.air_time = 5
             
-                
 
     def super_jump(self):
         if self.super_jumps:
@@ -202,6 +206,7 @@ class Player(PhyisicsEntity):
             self.jumps = 0
             self.air_time = 5
     
+
     def dash (self):
         if self.super_jumps > 0:
             if not self.dashing:

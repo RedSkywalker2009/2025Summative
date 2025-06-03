@@ -8,7 +8,7 @@ from utils import Animations
 from tilemap import Tilemap
 from clouds import Clouds
 from Menu import Menu, Options, CommandOption,Win
-import math
+
 
 
 class Game:
@@ -16,7 +16,7 @@ class Game:
     Resolution = (1920, 1080)
     tile_size = 16
     player_size = (12, 18)
-    bullet_size = player_size
+    bullet_size = (6,9)
 
     xIncx = {
         "Easy" : 0,
@@ -50,6 +50,7 @@ class Game:
         self.winner = False
         self.players = {}
         self.objects = []
+        self.draw_hitbox = False
         
         self.assets = {
             "decor" : Utils.load_images("tiles/decor", (Game.tile_size, Game.tile_size)),
@@ -80,8 +81,10 @@ class Game:
         self.winscreen = Win(self, self.assets["Winscreen"])
 
 
+    #Convert image scale (16) to tile scale. World Coordinates
     def scale(self, value):
         return value * self.tile_size/16
+
 
     def prep_tilemap(self):
 
@@ -90,8 +93,8 @@ class Game:
         for i_key in self.tilemap.tilemap.keys():
             i = self.tilemap.tilemap[i_key]
             if i["type"] == "turret":
-                xdir = 1 if i["variant"] == 0 else -1 if i["variant"] == 1 else 0 
-                ydir = 1 if i["variant"] == 2 else -1 if i["variant"] == 3 else 0 
+                xdir = 1 if (i["variant"] == 0 or i["variant"] == 5 or i["variant"] == 6) else -1 if (i["variant"] == 1 or i["variant"] == 4 or i["variant"] == 7) else 0 
+                ydir = 1 if (i["variant"] == 2 or i["variant"] == 4 or i["variant"] == 5) else -1 if (i["variant"] == 3 or i["variant"] == 6 or i["variant"] == 7) else 0 
                 self.objects.append(Turret(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size, xdir, ydir))
                 delete_keys.append(i_key)
 
