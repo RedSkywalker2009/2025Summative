@@ -14,8 +14,8 @@ import math
 class Game:
 
     Resolution = (1920, 1080)
-    tile_size = 64
-    player_size = (48, 72)
+    tile_size = 16
+    player_size = (12, 18)
     bullet_size = player_size
 
     xIncx = {
@@ -33,7 +33,7 @@ class Game:
     def __init__(self):
 
         pygame.init()
-        pygame.display.set_caption("2025 summitive")
+        pygame.display.set_caption("2025 Summative")
         #creating the screen and setting the size
         # consider 1920x1080
         self.screen = pygame.display.set_mode(Game.Resolution)
@@ -102,6 +102,7 @@ class Game:
 
     def LoadLevel(self):
         self.players = {}
+        self.objects = []
         for i in range(1, Game.players_num[self.config.get("Players", "1 Player")] + 1):
             self.players[i] = Player(self, i, (self.scale(200 + 10 * i), self.scale(330)), self.player_size, self.tile_size)
 
