@@ -19,6 +19,8 @@ class PhyisicsEntity:
 
         self.movement = [False, False]
         self.last_movement = [0,0]
+        self.dead = False
+        self.do_gravity = True
     
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
@@ -27,6 +29,19 @@ class PhyisicsEntity:
         if action != self.actions:
             self.actions = action
             self.animations = self.game.assets[self.type + "/" + self.actions].copy()
+
+
+    def checkCollision(self, object):
+         entity_rect = self.rect()
+         object_rect = object.rect()
+         if (not entity_rect.colliderect(object_rect)):
+             return
+         
+         self.hit(object)
+         object.hit(self)
+
+    def hit(self, object):
+        return
 
 
     def update(self, tilemap):
@@ -56,8 +71,6 @@ class PhyisicsEntity:
                 if frame_movement[1] > 0:
                     entity_rect.bottom = rects.top
                     self.collisions["down"] = True
-                else:
-                    print("hi")
                 if frame_movement[1] < 0:
                     entity_rect.top = rects.bottom
                     self.collisions["up"] = True
@@ -70,7 +83,8 @@ class PhyisicsEntity:
         
         self.last_movement = movement
 
-        self.velosity[1] = min(2, self.velosity[1] + (0.201) )
+        if self.do_gravity:
+            self.velosity[1] = min(2, self.velosity[1] + (0.201) )
 
         if self.collisions["down"] or self.collisions["up"]:
             self.velosity[1] = 0
@@ -99,8 +113,9 @@ class Player(PhyisicsEntity):
 
         movement = self.movement
 
-        if (self.dying):
+        if (self.dying) or self.actions == "die":
             self.set_actions("die")
+            self.dying = True
             self.dead = self.animations.done
             return
 
@@ -218,6 +233,12 @@ class Player(PhyisicsEntity):
         return False
     
 
+    def hit(self, object):
+        if (object.type == "bullet"):
+            self.dying = True
+
+
+
     def get_inputs(self):
         deltax = 0
         deltay = 0
@@ -251,3 +272,65 @@ class Player(PhyisicsEntity):
 
         self.movement = (deltax, deltay)
         return
+
+
+
+
+class Turret(PhyisicsEntity):
+    def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0):
+        super().__init__(game, "turret", pos, size, tilesize)
+        self.fireCountMax = 100
+        self.fireCount = self.fireCountMax
+        self.xdir = xdir
+        self.ydir = ydir
+        self.flip = xdir < 0
+        self.flip_up = ydir > xdir
+        self.do_gravity = False
+
+    def tryfire(self):
+        if (self.fireCount > 0):
+            return
+        self.fireCount = self.fireCountMax
+        self.set_actions("fire")
+    
+    def update(self, tilemap):
+
+        if (self.fireCount > 0):
+            self.fireCount -= 1
+
+        if (self.actions == "idle"):
+            self.tryfire()
+
+        if (self.animations.done == True): #reset the turret
+            self.game.objects.append(Bullet(self.game, self.pos, self.size, self.tile_size, self.xdir, self.ydir))
+            self.set_actions("idle")
+
+        return super().update(tilemap)
+
+    def render(self, surf, offset=(0, 0)):
+        return super().render(surf, offset)
+    
+
+class Bullet(PhyisicsEntity):
+    def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0):
+        super().__init__(game, "bullet", pos, size, tilesize)
+        self.velosity[0] = xdir
+        self.velosity[1] = ydir
+        self.do_gravity = False
+
+    def hit(self, object):
+        if (object.type == "player"):
+            self.set_actions("die")
+            self.velosity = (0,0)
+    
+    def update(self, tilemap):
+        if any(self.collisions.values()):
+            self.set_actions("die")
+            self.velosity = (0,0)
+        
+        if (self.actions == "die"):
+            self.dead = self.animations.done
+        
+        super().update(tilemap)
+        
+

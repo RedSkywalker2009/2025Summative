@@ -33,6 +33,7 @@ class Editor:
             "grass" : Utils.load_images("tiles/grass"),
             "large_decor" : Utils.load_images("tiles/large_decor"),
             "stone" : Utils.load_images("tiles/stone"),
+            "turret" : Utils.load_images("tiles/turret")
         }
         #setting my movement
         self.movement = [False,False,False,False]

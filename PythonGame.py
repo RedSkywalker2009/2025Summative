@@ -2,12 +2,13 @@ import sys
 import pygame
 
 
-from entities import PhyisicsEntity,Player
+from entities import PhyisicsEntity,Player, Turret
 from utils import Utils
 from utils import Animations
 from tilemap import Tilemap
 from clouds import Clouds
 from Menu import Menu, Options, CommandOption,Win
+import math
 
 
 class Game:
@@ -15,6 +16,7 @@ class Game:
     Resolution = (1920, 1080)
     tile_size = 64
     player_size = (48, 72)
+    bullet_size = player_size
 
     xIncx = {
         "Easy" : 0,
@@ -46,6 +48,8 @@ class Game:
         self.p_inputs = {}
         self.config = {}
         self.winner = False
+        self.players = {}
+        self.objects = []
         
         self.assets = {
             "decor" : Utils.load_images("tiles/decor", (Game.tile_size, Game.tile_size)),
@@ -54,12 +58,17 @@ class Game:
             "stone" : Utils.load_images("tiles/stone",(Game.tile_size, Game.tile_size)),
             "player" : Utils.load_image("entities/player.png",(Game.tile_size, Game.tile_size)),
             "clouds": Utils.load_images("clouds", scale= Game.tile_size/16),
+            "turret": Utils.load_images("tiles/turret", Game.player_size),
             "player/idle" : Animations(Utils.load_images("entities/player/idle",Game.player_size), img_dur=6),
             "player/die" : Animations(Utils.load_images("entities/player/die",Game.player_size), loop=False),
-            "player/run" : Animations(Utils.load_images("entities/reaper/run",Game.player_size), img_dur=4),
+            "player/run" : Animations(Utils.load_images("entities/player/run",Game.player_size), img_dur=4),
             "player/jump" : Animations(Utils.load_images("entities/player/jump",Game.player_size)),
             "player/slide" : Animations(Utils.load_images("entities/player/slide",Game.player_size)),
             "player/wall_slide" : Animations(Utils.load_images("entities/player/wall_slide",Game.player_size)),
+            "turret/idle" : Animations(Utils.load_images("entities/turret/idle",Game.player_size)),
+            "turret/fire" : Animations(Utils.load_images("entities/turret/fire",Game.player_size), loop=False),
+            "bullet/idle" : Animations(Utils.load_images("entities/bullet/idle",Game.bullet_size)),
+            "bullet/die" : Animations(Utils.load_images("entities/bullet/die",Game.bullet_size), loop=False),
             "Titlescreen" : Animations(Utils.load_images("Titlescreen", size = (250, 250))),
             "Winscreen" : Animations(Utils.load_images("Winscreen", size = (250, 250))),
         }
@@ -74,6 +83,21 @@ class Game:
     def scale(self, value):
         return value * self.tile_size/16
 
+    def prep_tilemap(self):
+
+        delete_keys = []
+
+        for i_key in self.tilemap.tilemap.keys():
+            i = self.tilemap.tilemap[i_key]
+            if i["type"] == "turret":
+                xdir = 1 if i["variant"] == "1" else -1 if i["variant"] == "2" else 0 
+                ydir = 1 if i["variant"] == "3" else -1 if i["variant"] == "4" else 0 
+                self.objects.append(Turret(self, (self.scale(i["pos"][0]), self.scale(i["pos"][1])), self.player_size, self.tile_size, xdir, ydir))
+                delete_keys.append(i_key)
+
+        #cleanup
+        for key in delete_keys:
+            del self.tilemap.tilemap[key]
 
 
     def LoadLevel(self):
@@ -85,11 +109,19 @@ class Game:
             p.set_inputmap(self.p_inputs[p.id])
 
         self.tilemap.load("map.json")
+
+        self.prep_tilemap()
+
         self.scroll = [0, 0]
         self.minx = 0
         self.miny = self.scale(380)
         self.finishline = self.scale(1228)
         self.winner = False
+
+        #self.objects.append(Turret(self, (self.scale(200), self.scale(330)), self.player_size, self.tile_size))
+        #self.objects.append(Turret(self, (self.scale(400), self.scale(130)), self.player_size, self.tile_size, 1, 1))
+        #self.objects.append(Turret(self, (self.scale(400), self.scale(300)), self.player_size, self.tile_size, 0, -1))
+        
 
         
     def Save(self, reloadLevel = True):
@@ -149,15 +181,30 @@ class Game:
             self.tilemap.render(self.display, offset = render_scroll)
 
             if (self.isPaused() == False):
-                for p in self.players.values():
-                    if p.dead or p.dying:
-                        continue
-                    p.get_inputs() #,(self.movement[1] - self.movement[0],0)
 
+                # Get player inputs
                 for p in self.players.values():
                     if p.dead:
                         continue
-                    p.update(self.tilemap) #,(self.movement[1] - self.movement[0],0))
+                    p.get_inputs()
+
+                # Update Players
+                for p in self.players.values():
+                    if p.dead:
+                        continue
+                    p.update(self.tilemap) 
+
+                # Update Objects
+                for o in self.objects:
+                    if o.dead:
+                        continue
+                    o.update(self.tilemap)
+                    #Check Object/Player Collisions
+                    for p in self.players.values():
+                        if p.dead:
+                            continue
+                        o.checkCollision(p)
+                
             elif(self.isMenuOpen):
                 self.menu.draw(self.display)
             elif (self.winner):
@@ -168,6 +215,13 @@ class Game:
                 if p.dead:
                     continue
                 p.render(self.display, render_scroll)
+
+            objectset = self.objects
+            for o in objectset:
+                if o.dead:
+                    self.objects.remove(o)
+                    continue
+                o.render(self.display, render_scroll)
 
             
         # set an event to close the game
