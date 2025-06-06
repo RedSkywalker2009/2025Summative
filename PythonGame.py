@@ -1,3 +1,4 @@
+#imports
 import sys
 import pygame
 
@@ -13,15 +14,16 @@ from Menu import Menu, Options, CommandOption,Win
 
 class Game:
 
+    #setting reselution and size of everything
     Resolution = (1920, 1080)
     tile_size = 16
     player_size = (12, 18)
-    bullet_size = (6,9)
+    bullet_size = (12,18)
 
     xIncx = {
         "Easy" : 0,
         "Medium" : 1,
-        "Hard" : 1.9
+        "Hard" : 1.5
     }
 
     players_num = {
@@ -94,7 +96,7 @@ class Game:
             i = self.tilemap.tilemap[i_key]
             if i["type"] == "turret":
                 xdir = 1 if (i["variant"] == 0 or i["variant"] == 5 or i["variant"] == 6) else -1 if (i["variant"] == 1 or i["variant"] == 4 or i["variant"] == 7) else 0 
-                ydir = 1 if (i["variant"] == 2 or i["variant"] == 4 or i["variant"] == 5) else -1 if (i["variant"] == 3 or i["variant"] == 6 or i["variant"] == 7) else 0 
+                ydir = 1 if (i["variant"] == 3 or i["variant"] == 4 or i["variant"] == 5) else -1 if (i["variant"] == 2 or i["variant"] == 6 or i["variant"] == 7) else 0 
                 self.objects.append(Turret(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size, xdir, ydir))
                 delete_keys.append(i_key)
 
@@ -118,8 +120,8 @@ class Game:
 
         self.scroll = [0, 0]
         self.minx = 0
-        self.miny = self.scale(380)
-        self.finishline = self.scale(1228)
+        self.miny = self.scale(500)
+        self.finishline = self.scale(1940)
         self.winner = False
 
         #self.objects.append(Turret(self, (self.scale(200), self.scale(330)), self.player_size, self.tile_size))

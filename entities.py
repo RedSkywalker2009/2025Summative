@@ -223,16 +223,16 @@ class Player(PhyisicsEntity):
 
 
     def on_key_press(self, symbol: int, mod: int) -> bool:
-        """Handle keyboard input."""
-        if direction := self.input_map.get(symbol):
+        direction = self.input_map.get(symbol)
+        if direction:
             self.inputs[direction] = True
             return True
 
         return False
 
     def on_key_release(self, symbol: int, mod: int) -> bool:
-        """Handle keyboard input release."""
-        if direction := self.input_map.get(symbol):
+        direction = self.input_map.get(symbol)
+        if direction:
             self.inputs[direction] = False
             return True
 
