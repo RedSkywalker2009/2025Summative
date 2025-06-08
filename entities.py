@@ -12,7 +12,7 @@ class PhyisicsEntity:
         self.collisions = {"up": False,"down": False,"left": False,"right": False}
 
         self.actions = ""
-        self.anim_offset = (0,0) #(-3,-3)
+        self.anim_offset = (0,0)
         self.flip = False
         self.set_actions("idle")
         self.input_map = {}
@@ -84,7 +84,7 @@ class PhyisicsEntity:
         self.last_movement = movement
 
         if self.do_gravity:
-            self.velosity[1] = min(2, self.velosity[1] + (0.201) )
+            self.velosity[1] = min(2, self.velosity[1] + (0.201))
 
         if self.collisions["down"] or self.collisions["up"]:
             self.velosity[1] = 0
@@ -98,7 +98,6 @@ class PhyisicsEntity:
             rect = self.rect()  
             rect.topleft = (rect.left - offset[0], rect.top - offset[1])
             pygame.draw.rect(surf, (0,0,100), rect)
-
 
 class Player(PhyisicsEntity):
     def __init__(self, game, id, pos, size, tile_size):
