@@ -33,7 +33,9 @@ class Editor:
             "grass" : Utils.load_images("tiles/grass"),
             "large_decor" : Utils.load_images("tiles/large_decor"),
             "stone" : Utils.load_images("tiles/stone"),
-            "turret" : Utils.load_images("tiles/turret")
+            "turret" : Utils.load_images("tiles/turret"),
+            "scroll" : Utils.load_images("tiles/scroll")
+
         }
         #setting my movement
         self.movement = [False,False,False,False]
@@ -144,7 +146,7 @@ class Editor:
                     if event.key == pygame.K_LSHIFT:
                         self.shift = True
                     if event.key == pygame.K_r:
-                        self.tilemap.save("map.json")
+                        self.tilemap.save("data/maps/easy.json")
                     if event.key == pygame.K_f:
                         self.ongrid = not self.ongrid
                 if event.type == pygame.KEYUP:      

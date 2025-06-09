@@ -110,7 +110,9 @@ class Player(PhyisicsEntity):
         self.s = {}
         self.id = id
         self.dying = False
+        self.winner = False
         self.dead = False
+        self.score = 0
 
     def update(self, tilemap):
         super().update(tilemap)
@@ -167,6 +169,10 @@ class Player(PhyisicsEntity):
 
     def render(self,surf,offset=(0,0)):
         super().render(surf,offset=offset)
+
+    def name(self):
+        return "Player " + str(self.id)
+
 
     def jump(self):
         if self.wall_slide:
@@ -282,9 +288,9 @@ class Player(PhyisicsEntity):
 
 
 class Turret(PhyisicsEntity):
-    def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0):
+    def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0, fire_delay = 100):
         super().__init__(game, "turret", pos, size, tilesize)
-        self.fireCountMax = 100
+        self.fireCountMax = fire_delay
         self.fireCount = self.fireCountMax
         self.xdir = xdir
         self.ydir = ydir
@@ -307,7 +313,7 @@ class Turret(PhyisicsEntity):
             self.tryfire()
 
         if (self.animations.done == True): #reset the turret
-            self.game.objects.append(Bullet(self.game, self.pos, self.size, self.tile_size, self.xdir, self.ydir))
+            self.game.objects.append(Bullet(self.game, self.pos, self.game.bullet_size, self.tile_size, self.xdir, self.ydir))
             self.set_actions("idle")
 
         return super().update(tilemap)
@@ -337,5 +343,30 @@ class Bullet(PhyisicsEntity):
             self.dead = self.animations.done
         
         super().update(tilemap)
-        
+
+
+
+class Scroll(PhyisicsEntity):
+    def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0):
+        super().__init__(game, "scroll", pos, size, tilesize)
+        self.do_gravity = False
+    
+
+    def hit(self, object):
+        if (object.type == "player"):
+            if self.actions == "idle":
+                object.score += 1
+            self.set_actions("die")
+            
+
+    def update(self, tilemap):
+
+        if (self.actions == "die"):
+            self.dead = self.animations.done
+
+        return super().update(tilemap)
+
+    def render(self, surf, offset=(0, 0)):
+        return super().render(surf, offset)
+    
 

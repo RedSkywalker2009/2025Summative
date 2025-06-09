@@ -3,7 +3,7 @@ import sys
 import pygame
 
 
-from entities import PhyisicsEntity,Player, Turret
+from entities import PhyisicsEntity,Player, Turret, Scroll
 from utils import Utils
 from utils import Animations
 from tilemap import Tilemap
@@ -18,12 +18,30 @@ class Game:
     Resolution = (1920, 1080)
     tile_size = 16
     player_size = (12, 18)
-    bullet_size = (12,18)
+    bullet_size = (12, 12)
 
     xIncx = {
         "Easy" : 0,
         "Medium" : 1,
         "Hard" : 1.5
+    }
+
+    bullet_speed = {
+        "Easy" : 0.7,
+        "Medium" : 1,
+        "Hard" : 1
+    }
+
+    turret_speed = {
+        "Easy" : 200,
+        "Medium" : 200,
+        "Hard" : 200
+    }
+    
+    level_map = {
+        "Easy" : "easy.json",
+        "Medium" : "easy.json",
+        "Hard" : "hard.json"
     }
 
     players_num = {
@@ -72,6 +90,8 @@ class Game:
             "turret/fire" : Animations(Utils.load_images("entities/turret/fire",Game.player_size), loop=False),
             "bullet/idle" : Animations(Utils.load_images("entities/bullet/idle",Game.bullet_size)),
             "bullet/die" : Animations(Utils.load_images("entities/bullet/die",Game.bullet_size), loop=False),
+            "scroll/idle" : Animations(Utils.load_images("entities/scroll/idle",(Game.tile_size, Game.tile_size))),
+            "scroll/die" : Animations(Utils.load_images("entities/scroll/die",(Game.tile_size, Game.tile_size)), loop=False),
             "Titlescreen" : Animations(Utils.load_images("Titlescreen", size = (250, 250))),
             "Winscreen" : Animations(Utils.load_images("Winscreen", size = (250, 250))),
         }
@@ -97,7 +117,11 @@ class Game:
             if i["type"] == "turret":
                 xdir = 1 if (i["variant"] == 0 or i["variant"] == 5 or i["variant"] == 6) else -1 if (i["variant"] == 1 or i["variant"] == 4 or i["variant"] == 7) else 0 
                 ydir = 1 if (i["variant"] == 3 or i["variant"] == 4 or i["variant"] == 5) else -1 if (i["variant"] == 2 or i["variant"] == 6 or i["variant"] == 7) else 0 
-                self.objects.append(Turret(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size, xdir, ydir))
+                self.objects.append(Turret(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size, xdir * Game.bullet_speed[self.config.get("Difficulty", "Easy")], ydir * Game.bullet_speed[self.config.get("Difficulty", "Easy")], Game.turret_speed[self.config.get("Difficulty", "Easy")]))
+                delete_keys.append(i_key)
+
+            if i["type"] == "scroll":
+                self.objects.append(Scroll(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size))
                 delete_keys.append(i_key)
 
         #cleanup
@@ -114,7 +138,7 @@ class Game:
         for p in self.players.values():
             p.set_inputmap(self.p_inputs[p.id])
 
-        self.tilemap.load("map.json")
+        self.tilemap.load("data/maps/" + Game.level_map[self.config.get("Difficulty", "Easy")])
 
         self.prep_tilemap()
 
@@ -164,7 +188,14 @@ class Game:
                 x += p.rect().centerx
                 y += p.rect().centery
                 if (p.rect().centerx > self.finishline):
-                    self.winner = True
+                    p.winner = True
+            
+            # check if all players are either done or dead
+            win = True
+            for p in self.players.values():
+                if not (p.winner or p.dead):
+                    win = False
+            self.winner = win
             
             #compute the average position of the players
             if (num_players > 0):

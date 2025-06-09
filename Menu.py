@@ -86,8 +86,26 @@ class Win:
         self.game = game
         self.img = img
 
+    def score(p):
+        return p.score
+
     def draw (self, screen):
         screen.blit(self.img.img(), (175,50))
+        pos = (175,50)
+        wincolor = (255,255,255)
+        deadcolor = (200, 0, 0)
+        for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
+            if (p.winner):
+                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, wincolor), pos)
+                pos = (pos[0], pos[1] + self.fontsize)
+        
+        for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
+            if (not p.winner):
+                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, deadcolor), pos)
+                pos = (pos[0], pos[1] + self.fontsize)
+        
+        
+
         
 
     
