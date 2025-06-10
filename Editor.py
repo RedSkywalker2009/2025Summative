@@ -45,7 +45,7 @@ class Editor:
         self.tilemap = Tilemap(self, tile_size=16)
         
         try:
-            self.tilemap.load("map.json")
+            self.tilemap.load("data/maps/easy.json")
         except FileNotFoundError:
             pass
         #setting my list and the group and varian for the users choosing 

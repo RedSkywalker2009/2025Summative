@@ -92,8 +92,9 @@ class PhyisicsEntity:
         self.animations.update()
 
 
-    def render(self, surf, offset = (0,0)):
-        surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
+    def render(self, surf, offset = (0,0), absolute_pos = None):
+        pos = self.pos if absolute_pos is None else absolute_pos
+        surf.blit(pygame.transform.flip(self.animations.img(), self.flip, False), (pos[0] - offset[0] + self.anim_offset[0], pos[1] - offset[1] + self.anim_offset[1]))
         if (self.game.draw_hitbox):
             rect = self.rect()  
             rect.topleft = (rect.left - offset[0], rect.top - offset[1])
@@ -167,8 +168,6 @@ class Player(PhyisicsEntity):
         else:
             self.velosity[0] = min(self.velosity[0] + 0.1, 0)
 
-    def render(self,surf,offset=(0,0)):
-        super().render(surf,offset=offset)
 
     def name(self):
         return "Player " + str(self.id)
@@ -291,7 +290,7 @@ class Turret(PhyisicsEntity):
     def __init__(self, game, pos, size, tilesize, xdir = 1, ydir = 0, fire_delay = 100):
         super().__init__(game, "turret", pos, size, tilesize)
         self.fireCountMax = fire_delay
-        self.fireCount = self.fireCountMax
+        self.fireCount = -1
         self.xdir = xdir
         self.ydir = ydir
         self.flip = xdir < 0

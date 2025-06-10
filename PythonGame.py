@@ -8,7 +8,7 @@ from utils import Utils
 from utils import Animations
 from tilemap import Tilemap
 from clouds import Clouds
-from Menu import Menu, Options, CommandOption,Win
+from Menu import Menu, Options, CommandOption,Win, PlayerStats
 
 
 
@@ -19,35 +19,46 @@ class Game:
     tile_size = 16
     player_size = (12, 18)
     bullet_size = (12, 12)
+    player_stats = (60, 30)
 
     xIncx = {
         "Easy" : 0,
         "Medium" : 1,
-        "Hard" : 1.5
+        "Hard" : 0.3,
+        "Impossible": 1.5
     }
 
     bullet_speed = {
         "Easy" : 0.7,
         "Medium" : 1,
-        "Hard" : 1
+        "Hard" : 1,
+        "Impossible": 1.5
     }
 
     turret_speed = {
         "Easy" : 200,
         "Medium" : 200,
-        "Hard" : 200
+        "Hard" : 200,
+        "Impossible": 400
     }
     
     level_map = {
         "Easy" : "easy.json",
         "Medium" : "easy.json",
-        "Hard" : "hard.json"
+        "Hard" : "hard.json",
+        "Impossible": "hard.json"
     }
 
     players_num = {
         "1 Player" : 1,
         "2 Players" : 2,
         "3 Players" : 3
+    }
+
+    player_screen_pos = {
+        1 : (0, 0),
+        2 : (Resolution[0]/3 - player_stats[0]/3, 0),
+        3 : (Resolution[0]/3 - player_stats[0]/3, Resolution[1]/3 - player_stats[1]/3)
     }
 
     def __init__(self):
@@ -69,6 +80,7 @@ class Game:
         self.config = {}
         self.winner = False
         self.players = {}
+        self.player_screen = {}
         self.objects = []
         self.draw_hitbox = False
         
@@ -94,14 +106,17 @@ class Game:
             "scroll/die" : Animations(Utils.load_images("entities/scroll/die",(Game.tile_size, Game.tile_size)), loop=False),
             "Titlescreen" : Animations(Utils.load_images("Titlescreen", size = (250, 250))),
             "Winscreen" : Animations(Utils.load_images("Winscreen", size = (250, 250))),
+            "Defeatscreen" : Animations(Utils.load_images("Defeatscreen", size = (250, 250))),
+            "playerstats" : Animations(Utils.load_images("PlayerStats", size = self.player_stats))
+
         }
 
         self.isMenuOpen = False
-        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
+        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard", "Impossible"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
         self.Save(False)
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         self.winscreen = Win(self, self.assets["Winscreen"])
-
+        self.defeatscreen = Win(self, self.assets["Defeatscreen"])
 
     #Convert image scale (16) to tile scale. World Coordinates
     def scale(self, value):
@@ -111,6 +126,7 @@ class Game:
     def prep_tilemap(self):
 
         delete_keys = []
+        delete_list = []
 
         for i_key in self.tilemap.tilemap.keys():
             i = self.tilemap.tilemap[i_key]
@@ -124,16 +140,36 @@ class Game:
                 self.objects.append(Scroll(self, (i["pos"][0] * self.tile_size, i["pos"][1] * self.tile_size), self.player_size, self.tile_size))
                 delete_keys.append(i_key)
 
+        for i in self.tilemap.offgrid_tiles:
+            if i["type"] == "turret":
+                xdir = 1 if (i["variant"] == 0 or i["variant"] == 5 or i["variant"] == 6) else -1 if (i["variant"] == 1 or i["variant"] == 4 or i["variant"] == 7) else 0 
+                ydir = 1 if (i["variant"] == 3 or i["variant"] == 4 or i["variant"] == 5) else -1 if (i["variant"] == 2 or i["variant"] == 6 or i["variant"] == 7) else 0 
+                self.objects.append(Turret(self, (i["pos"][0], i["pos"][1]), self.player_size, self.tile_size, xdir * Game.bullet_speed[self.config.get("Difficulty", "Easy")], ydir * Game.bullet_speed[self.config.get("Difficulty", "Easy")], Game.turret_speed[self.config.get("Difficulty", "Easy")]))
+                delete_list.append(i)
+
+            if i["type"] == "scroll":
+                self.objects.append(Scroll(self, (i["pos"][0], i["pos"][1]), self.player_size, self.tile_size))
+                delete_list.append(i)    
+
+
         #cleanup
         for key in delete_keys:
             del self.tilemap.tilemap[key]
 
+        for v in delete_list:
+            if v in delete_list:
+                self.tilemap.offgrid_tiles.remove(v)
+            else:
+                print("WHAAHAHAH")
+
 
     def LoadLevel(self):
         self.players = {}
+        self.player_screen = {}
         self.objects = []
         for i in range(1, Game.players_num[self.config.get("Players", "1 Player")] + 1):
             self.players[i] = Player(self, i, (self.scale(200 + 10 * i), self.scale(330)), self.player_size, self.tile_size)
+            self.player_screen[i] = PlayerStats(self, self.assets["playerstats"], self.assets["scroll/die"], self.players[i] )
 
         for p in self.players.values():
             p.set_inputmap(self.p_inputs[p.id])
@@ -144,13 +180,9 @@ class Game:
 
         self.scroll = [0, 0]
         self.minx = 0
-        self.miny = self.scale(500)
+        self.miny = self.scale(550)
         self.finishline = self.scale(1940)
         self.winner = False
-
-        #self.objects.append(Turret(self, (self.scale(200), self.scale(330)), self.player_size, self.tile_size))
-        #self.objects.append(Turret(self, (self.scale(400), self.scale(130)), self.player_size, self.tile_size, 1, 1))
-        #self.objects.append(Turret(self, (self.scale(400), self.scale(300)), self.player_size, self.tile_size, 0, -1))
         
 
         
@@ -218,12 +250,12 @@ class Game:
             self.tilemap.render(self.display, offset = render_scroll)
 
             if (self.isPaused() == False):
-
                 # Get player inputs
-                for p in self.players.values():
-                    if p.dead:
-                        continue
-                    p.get_inputs()
+                if p.dying == False:
+                    for p in self.players.values():
+                        if p.dead:
+                            continue
+                        p.get_inputs()
 
                 # Update Players
                 for p in self.players.values():
@@ -242,23 +274,39 @@ class Game:
                             continue
                         o.checkCollision(p)
                 
-            elif(self.isMenuOpen):
-                self.menu.draw(self.display)
-            elif (self.winner):
-                self.winscreen.draw(self.display)
+            objectset = self.objects
+            for o in objectset:
+                if o.dead:
+                    self.objects.remove(o)
+                    continue
+                o.render(self.display, render_scroll) 
                 
+            #Draw the menu under the players
+            
+            if (self.isPaused()):
+                if (self.isMenuOpen):
+                    self.menu.draw(self.display)
+                elif (self.winner):
+                    if p.winner in self.players:
+                        self.winscreen.draw(self.display)
+                    else:
+                        self.defeatscreen.draw(self.display)
+
+
 
             for p in self.players.values():
                 if p.dead:
                     continue
                 p.render(self.display, render_scroll)
 
-            objectset = self.objects
-            for o in objectset:
-                if o.dead:
-                    self.objects.remove(o)
-                    continue
-                o.render(self.display, render_scroll)
+            
+            for i in self.players.keys():
+                self.player_screen[i].draw(self.display, Game.player_screen_pos[i])
+
+
+
+
+
 
             
         # set an event to close the game

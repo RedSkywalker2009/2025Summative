@@ -78,35 +78,31 @@ class CommandOption(Options):
         if (symbol == pygame.K_RETURN or symbol == pygame.K_SPACE):
             self.command()
 
-class Win:
 
+class Win:
     def __init__ (self, game, img):
         self.fontsize = 50
         self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
         self.game = game
         self.img = img
 
-    def score(p):
-        return p.score
-
     def draw (self, screen):
         screen.blit(self.img.img(), (175,50))
-        pos = (175,50)
-        wincolor = (255,255,255)
-        deadcolor = (200, 0, 0)
-        for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
-            if (p.winner):
-                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, wincolor), pos)
-                pos = (pos[0], pos[1] + self.fontsize)
-        
-        for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
-            if (not p.winner):
-                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, deadcolor), pos)
-                pos = (pos[0], pos[1] + self.fontsize)
-        
-        
 
+class PlayerStats:
+    def __init__ (self, game, img, icon, player):
+        self.fontsize = 10
+        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
+        self.game = game
+        self.img = img
+        self.icon = icon
+        self.player = player
         
+    def draw (self, screen, pos):
+        screen.blit(self.img.img(), pos)
+        self.player.render(screen, offset = (0,0), absolute_pos = (pos[0] + 5, pos[1] + 5))
+        screen.blit(self.icon.img(), (pos[0] + 5 + self.game.player_size[0] + 5, pos[1] + 5))
+        screen.blit(self.font.render(str(self.player.score), True, (0, 0, 0)), (pos[0] + 5 + self.game.player_size[0] + 5 + self.icon.img().get_width() + 5, pos[1] + 5))
 
-    
+
     
