@@ -251,11 +251,11 @@ class Game:
 
             if (self.isPaused() == False):
                 # Get player inputs
-                if p.dying == False:
-                    for p in self.players.values():
-                        if p.dead:
-                            continue
-                        p.get_inputs()
+                
+                for p in self.players.values():
+                    if p.dead or p.dying:
+                        continue
+                    p.get_inputs()
 
                 # Update Players
                 for p in self.players.values():
@@ -287,7 +287,7 @@ class Game:
                 if (self.isMenuOpen):
                     self.menu.draw(self.display)
                 elif (self.winner):
-                    if p.winner in self.players:
+                    if any(p.winner == True for p in self.players.values()):
                         self.winscreen.draw(self.display)
                     else:
                         self.defeatscreen.draw(self.display)
