@@ -159,8 +159,7 @@ class Game:
         for v in delete_list:
             if v in delete_list:
                 self.tilemap.offgrid_tiles.remove(v)
-            else:
-                print("WHAAHAHAH")
+            
 
 
     def LoadLevel(self):

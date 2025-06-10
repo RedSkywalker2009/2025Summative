@@ -124,6 +124,8 @@ class Player(PhyisicsEntity):
             self.set_actions("die")
             self.dying = True
             self.dead = self.animations.done
+            self.velosity[0] = 0
+            self.velosity[1] = 0
             return
 
         self.air_time += 1
