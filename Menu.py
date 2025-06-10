@@ -4,7 +4,7 @@ class Menu:
 
     def __init__ (self, options, img):
         self.fontsize = 32
-        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
+        self.font = pygame.font.SysFont('mvboli', self.fontsize)
         self.options = options
         self.selected = options[0]
         self.img = img
@@ -81,8 +81,8 @@ class CommandOption(Options):
 
 class Win:
     def __init__ (self, game, img):
-        self.fontsize = 50
-        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
+        self.fontsize = 30
+        self.font = pygame.font.SysFont('mvboli', self.fontsize)
         self.game = game
         self.img = img
 
@@ -90,26 +90,27 @@ class Win:
         return p.score
 
     def draw (self, screen):
-        pos = (175,50)
+        pos = (175,90)
+        pos_score = (145,0)
         screen.blit(self.img.img(), pos)
         wincolor = (255,255,255)
         deadcolor = (200, 0, 0)
         for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
             if (p.winner):
-                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, wincolor), pos)
-                pos = (pos[0], pos[1] + self.fontsize)
+                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, wincolor), pos_score)
+                pos_score = (pos_score[0], pos_score[1] + self.fontsize)
         
         for p in sorted(self.game.players.values(), key=Win.score, reverse=True):
             if (not p.winner):
-                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, deadcolor), pos)
-                pos = (pos[0], pos[1] + self.fontsize)
+                screen.blit(self.font.render((p.name()) + ":  " + str(p.score) + " scrolls", True, deadcolor), pos_score)
+                pos_score = (pos_score[0], pos_score[1] + self.fontsize)
 
 
 
 class PlayerStats:
     def __init__ (self, game, img, icon, player):
         self.fontsize = 10
-        self.font = pygame.font.SysFont('segoeuiblack', self.fontsize)
+        self.font = pygame.font.SysFont('mvboli', self.fontsize)
         self.game = game
         self.img = img
         self.icon = icon

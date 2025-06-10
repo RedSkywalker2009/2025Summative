@@ -239,7 +239,6 @@ class Game:
                 self.scroll[1] += (y - self.display.get_height()/2 - self.scroll[1]) /10
 
 
-
             render_scroll = (max(int(self.minx), int(self.scroll[0])), min(int(self.scroll[1]), int(self.miny)))
             
             if (not self.isPaused()):
@@ -305,11 +304,6 @@ class Game:
             for i in self.players.keys():
                 self.player_screen[i].draw(self.display, self.player_screen_pos(i))
 
-
-
-
-
-
             
         # set an event to close the game
             for event in pygame.event.get():
@@ -342,7 +336,6 @@ class Game:
             p.on_key_press(symbol, mod)
         
 
-
     def on_key_release(self, symbol: int, mod: int) -> bool:
         for p in self.players.values():
             p.on_key_release(symbol, mod)
@@ -356,48 +349,21 @@ g.p_inputs[1] = {  # Look up direction based on key symbol
             pygame.K_a: "LEFT",
             pygame.K_d: "RIGHT",
             pygame.K_e: "SPECIAL1",
-            pygame.K_r: "BLOCK",
-            pygame.K_q: "SPECIAL2",
-            pygame.K_z: "ATTACK1",
-            pygame.K_x: "ATTACK2",
-            pygame.K_c: "ATTACK3",
-            pygame.K_y: "DIE",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
-            pygame.CONTROLLER_BUTTON_A: "JUMP",
-            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
-            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+            pygame.K_q: "SPECIAL2"
             }
 g.p_inputs[2] = {  # Look up direction based on key symbol
             pygame.K_i: "JUMP",
-            pygame.K_k: "CROUCH",
             pygame.K_j: "LEFT",
             pygame.K_l: "RIGHT",
-            pygame.K_u: "SPECIAL1",
-            pygame.K_p: "BLOCK",
-            pygame.K_o: "SPECIAL2",
-            pygame.K_m: "ATTACK1",
-            pygame.K_COMMA: "ATTACK2",
-            pygame.K_PERIOD: "ATTACK3",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
-            pygame.CONTROLLER_BUTTON_A: "JUMP",
-            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
-            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+            pygame.K_o: "SPECIAL1",
+            pygame.K_u: "SPECIAL2"
             }
 g.p_inputs[3] = {  # Look up direction based on key symbol
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
-            pygame.CONTROLLER_BUTTON_A: "JUMP",
-            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
-            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
-            }
-g.p_inputs[4] = {  # Look up direction based on key symbol
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "LEFT",
-            pygame.CONTROLLER_BUTTON_DPAD_LEFT: "RIGHT",
-            pygame.CONTROLLER_BUTTON_A: "JUMP",
-            pygame.CONTROLLER_BUTTON_LEFTSHOULDER: "SPECIAL1",
-            pygame.CONTROLLER_BUTTON_RIGHTSHOULDER: "SPECIAL2",
+            pygame.K_UP: "JUMP",
+            pygame.K_LEFT: "LEFT",
+            pygame.K_RIGHT: "RIGHT",
+            pygame.K_RCTRL: "SPECIAL1",
+            pygame.K_RSHIFT: "SPECIAL2"
             }
             
 g.LoadLevel()
