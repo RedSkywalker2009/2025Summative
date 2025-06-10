@@ -124,8 +124,9 @@ class Player(PhyisicsEntity):
             self.set_actions("die")
             self.dying = True
             self.dead = self.animations.done
-            self.velosity[0] = 0
-            self.velosity[1] = 0
+            velocity = max(min(self.velosity[0], 2), -2)
+            self.velosity[0] = velocity * 0.95 + self.movement[0]
+            self.movement = (0, 0)
             return
 
         self.air_time += 1
@@ -249,6 +250,8 @@ class Player(PhyisicsEntity):
         if (object.type == "bullet"):
             self.dying = True
 
+    def allow_input(self):
+        return not (self.dead or self.dying)
 
 
     def get_inputs(self):
@@ -256,7 +259,7 @@ class Player(PhyisicsEntity):
         deltay = 0
         hasInput = any(self.inputs.values())
 
-        if (True):
+        if (self.allow_input()):
             if "JUMP" in self.inputs and self.inputs["JUMP"]:
                 self.jump()
                 self.inputs["JUMP"] = False

@@ -55,11 +55,14 @@ class Game:
         "3 Players" : 3
     }
 
-    player_screen_pos = {
-        1 : (0, 0),
-        2 : (Resolution[0]/3 - player_stats[0]/3, 0),
-        3 : (Resolution[0]/3 - player_stats[0]/3, Resolution[1]/3 - player_stats[1]/3)
-    }
+    def player_screen_pos(self, i):
+        if (i == 1):
+            return (0,0)
+        if (i == 2):
+            return (self.screen_width - self.player_stats[0], 0)
+        if (i == 3):
+            return (self.screen_width - self.player_stats[0], self.screen_height - self.player_stats[1])
+        return (0, 0)
 
     def __init__(self):
 
@@ -69,9 +72,9 @@ class Game:
         # consider 1920x1080
         self.screen = pygame.display.set_mode(Game.Resolution)
 
-        screen_width = Game.tile_size * 42
-        screen_height = (Game.Resolution[1]/Game.Resolution[0]) * screen_width
-        self.display = pygame.Surface( (screen_width, int(screen_height)) )
+        self.screen_width = Game.tile_size * 42
+        self.screen_height = (Game.Resolution[1]/Game.Resolution[0]) * self.screen_width
+        self.display = pygame.Surface( (self.screen_width, int(self.screen_height)) )
         #setting framerate
         self.clock = pygame.time.Clock()
         self.tilemap = Tilemap(self, Game.tile_size)
@@ -300,7 +303,7 @@ class Game:
 
             
             for i in self.players.keys():
-                self.player_screen[i].draw(self.display, Game.player_screen_pos[i])
+                self.player_screen[i].draw(self.display, self.player_screen_pos(i))
 
 
 
