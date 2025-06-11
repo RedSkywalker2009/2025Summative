@@ -5,11 +5,19 @@ import os
 BASE_IMG_PATH = "data/images/"
 
 class Utils:
+
+    def scale_by(image:pygame.Surface, scale:float) -> pygame.Surface:
+        if pygame.transform.scale_by:
+            return pygame.transform.scale_by(image, scale)
+        width = image.get_width() * scale
+        height = image.get_height() * scale
+        return pygame.transform.scale(image, (width, height))
+
     def load_image(path, size = None, scale = 1):
         if not size is None:
             img = pygame.transform.scale(pygame.image.load(BASE_IMG_PATH + path), size).convert()
         else:
-            img = pygame.transform.scale_by(pygame.image.load(BASE_IMG_PATH + path), scale).convert()
+            img = Utils.scale_by(pygame.image.load(BASE_IMG_PATH + path), scale).convert()
         img.set_colorkey((0,0,0))
         return img
     def load_images(path, size = None, scale = 1):

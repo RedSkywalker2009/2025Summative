@@ -87,6 +87,7 @@ class Game:
         self.objects = []
         self.draw_hitbox = False
         
+        #load assets
         self.assets = {
             "decor" : Utils.load_images("tiles/decor", (Game.tile_size, Game.tile_size)),
             "grass" : Utils.load_images("tiles/grass",(Game.tile_size, Game.tile_size)),
@@ -115,8 +116,10 @@ class Game:
         }
 
         self.isMenuOpen = False
+        #set options for menu
         self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard", "Impossible"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
         self.Save(False)
+        #creat images,screens and amount (for clouds)
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         self.winscreen = Win(self, self.assets["Winscreen"])
         self.defeatscreen = Win(self, self.assets["Defeatscreen"])
@@ -125,9 +128,10 @@ class Game:
     def scale(self, value):
         return value * self.tile_size/16
 
-
+    #prepare tilemap
     def prep_tilemap(self):
 
+        
         delete_keys = []
         delete_list = []
 
