@@ -110,19 +110,22 @@ class Game:
             "scroll/die" : Animations(Utils.load_images("entities/scroll/die",(Game.tile_size, Game.tile_size)), loop=False),
             "Titlescreen" : Animations(Utils.load_images("Titlescreen", size = (250, 250))),
             "Winscreen" : Animations(Utils.load_images("Winscreen", size = (250, 250))),
+            "Controlscreen" : Animations(Utils.load_images("Controlscreen", size = (500, 300))),
             "Defeatscreen" : Animations(Utils.load_images("Defeatscreen", size = (250, 250))),
             "playerstats" : Animations(Utils.load_images("PlayerStats", size = self.player_stats))
 
         }
 
         self.isMenuOpen = False
+        self.isControlsOpen = False
         #set options for menu
-        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard", "Impossible"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
+        self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard", "Impossible"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Show Controls", self.ShowControls), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
         self.Save(False)
         #creat images,screens and amount (for clouds)
         self.clouds = Clouds(self.assets["clouds"], count = 60)
         self.winscreen = Win(self, self.assets["Winscreen"])
         self.defeatscreen = Win(self, self.assets["Defeatscreen"])
+        self.controlscreen = Win(self, self.assets["Controlscreen"])
 
     #Convert image scale (16) to tile scale. World Coordinates
     def scale(self, value):
@@ -191,6 +194,9 @@ class Game:
         self.winner = False
         
 
+    def ShowControls(self):
+        self.isControlsOpen = True
+        self.isMenuOpen = False
         
     def Save(self, reloadLevel = True):
         self.config = {}
@@ -206,7 +212,7 @@ class Game:
         
 
     def isPaused(self):
-        return self.winner or self.isMenuOpen
+        return self.winner or self.isMenuOpen or self.isControlsOpen
 
 
     def run (self):
@@ -291,6 +297,8 @@ class Game:
             if (self.isPaused()):
                 if (self.isMenuOpen):
                     self.menu.draw(self.display)
+                elif (self.isControlsOpen):
+                    self.controlscreen.draw(self.display)
                 elif (self.winner):
                     if any(p.winner == True for p in self.players.values()):
                         self.winscreen.draw(self.display)
@@ -315,7 +323,8 @@ class Game:
                    self.Quit()
 
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                    self.isMenuOpen = True if not self.isMenuOpen else False
+                    self.isMenuOpen = True if not (self.isMenuOpen or self.isControlsOpen) else False
+                    self.isControlsOpen = False
 
                 if (not self.isMenuOpen):
                    if event.type == pygame.KEYDOWN:

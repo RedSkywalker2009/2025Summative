@@ -90,7 +90,8 @@ class Win:
         return p.score
 
     def draw (self, screen):
-        pos = (175,90)
+        w = self.img.img().get_width()
+        pos = (screen.get_width()/2 - w/2,90)
         pos_score = (145,0)
         screen.blit(self.img.img(), pos)
         wincolor = (255,255,255)
