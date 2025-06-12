@@ -117,7 +117,7 @@ class Game:
         }
 
         self.isMenuOpen = False
-        self.isControlsOpen = False
+        self.isControlsOpen = True
         #set options for menu
         self.menu = Menu([Options("Difficulty", ["Easy", "Medium", "Hard", "Impossible"], "Easy"), Options("Players", ["1 Player", "2 Players", "3 Players"], "1 Player"), CommandOption("Show Controls", self.ShowControls), CommandOption("Restart", self.Save), CommandOption("Quit", self.Quit)], self.assets["Titlescreen"])
         self.Save(False)
